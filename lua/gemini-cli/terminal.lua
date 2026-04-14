@@ -127,14 +127,13 @@ M.providers = {
       end
 
       local opts = config.options.terminal.float_opts
-      local win_obj = snacks.terminal.open(nil, {
+      local win_obj = snacks.win({
         buf = buf,
-        win = {
-          position = "float",
-          width = opts.width,
-          height = opts.height,
-          border = opts.border,
-        },
+        position = "float",
+        width = opts.width,
+        height = opts.height,
+        border = opts.border or "rounded",
+        style = "terminal",
       })
       
       return win_obj.win
