@@ -18,12 +18,30 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 {
   "mceazy2700/gemini-cli.nvim",
-  dependencies = { "nvim-lua/plenary.nvim" },
-  config = function()
-    require("gemini-cli").setup({
-      -- Options
-    })
-  end,
+  dependencies = { 
+    "nvim-lua/plenary.nvim",
+    "folke/snacks.nvim", -- Optional: for the "snacks" terminal provider
+  },
+  opts = {
+    -- See Configuration section for options
+  },
+  keys = {
+    { "<leader>a", nil, desc = "AI/Gemini" },
+    { "<leader>ac", "<cmd>Gemini<cr>", desc = "Toggle Gemini" },
+    { "<leader>ar", "<cmd>GeminiResume<cr>", desc = "Resume Gemini" },
+    { "<leader>am", "<cmd>GeminiSelectModel<cr>", desc = "Select Gemini model" },
+    { "<leader>aa", "<cmd>GeminiAsk<cr>", desc = "Ask Gemini", mode = { "n", "v" } },
+    {
+      "<leader>ab",
+      function()
+        require("gemini-cli.integrations").add_to_context(vim.api.nvim_buf_get_name(0))
+      end,
+      desc = "Add current buffer to Gemini context",
+    },
+    -- Diff management (when in a (proposed) buffer)
+    { "<leader>ay", "<cmd>GeminiDiffAccept<cr>", desc = "Accept diff" },
+    { "<leader>an", "<cmd>GeminiDiffDeny<cr>", desc = "Deny diff" },
+  },
 }
 ```
 
@@ -34,14 +52,16 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 - `:GeminiAsk` (or `v:GeminiAsk`) - Prompt about a visual selection or just start a prompt with context.
 - `:GeminiSelectModel` - Select the Gemini model to use (customizable in config).
 - `:GeminiResume` - Resume the last session.
+- `:GeminiDiffAccept` - Accept the current proposed diff.
+- `:GeminiDiffDeny` - Reject the current proposed diff.
 - `:checkhealth gemini-cli` - Troubleshooting.
 
 ### Diff Workflow
 When Gemini proposes a change:
 1. A new tab opens with `vimdiff`.
 2. Review the `(proposed)` buffer.
-3. **Accept:** Run `:w` in the proposed buffer.
-4. **Reject:** Run `:q` in the proposed buffer.
+3. **Accept:** Run `:GeminiDiffAccept` (or `<leader>ay`) or just `:w` in the proposed buffer.
+4. **Reject:** Run `:GeminiDiffDeny` (or `<leader>an`) or just `:q` in the proposed buffer.
 
 ### Explorer Integrations
 Add to your explorer configuration:
@@ -50,7 +70,7 @@ Add to your explorer configuration:
 ```lua
 require("oil").setup({
   keymaps = {
-    ["<leader>ga"] = "require('gemini-cli.integrations').oil_add()",
+    ["<leader>aa"] = "require('gemini-cli.integrations').oil_add()",
   }
 })
 ```
@@ -61,7 +81,7 @@ require("oil").setup({
 local function on_attach(bufnr)
   local api = require("nvim-tree.api")
   api.config.mappings.default_on_attach(bufnr)
-  vim.keymap.set("n", "<leader>ga", require("gemini-cli.integrations").nvim_tree_add, { buffer = bufnr })
+  vim.keymap.set("n", "<leader>aa", require("gemini-cli.integrations").nvim_tree_add, { buffer = bufnr })
 end
 ```
 

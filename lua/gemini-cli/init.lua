@@ -28,6 +28,26 @@ function M.setup(opts)
     commands.resume()
   end, {})
 
+  vim.api.nvim_create_user_command("GeminiDiffAccept", function()
+    local buf = vim.api.nvim_get_current_buf()
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("%(proposed%)$") then
+      vim.cmd("write")
+    else
+      vim.notify("Gemini CLI: Not in a proposed diff buffer", vim.log.levels.ERROR)
+    end
+  end, {})
+
+  vim.api.nvim_create_user_command("GeminiDiffDeny", function()
+    local buf = vim.api.nvim_get_current_buf()
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("%(proposed%)$") then
+      vim.cmd("quit")
+    else
+      vim.notify("Gemini CLI: Not in a proposed diff buffer", vim.log.levels.ERROR)
+    end
+  end, {})
+
   vim.api.nvim_create_autocmd("VimLeave", {
     callback = function()
       require("gemini-cli.server").stop()
