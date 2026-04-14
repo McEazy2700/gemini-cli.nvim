@@ -100,7 +100,7 @@ require("gemini-cli").setup({
 
     -- Only for "native" provider
     position = "right", -- "right", "left", "top", "bottom"
-    size = 40,         -- width (for right/left) or height (for top/bottom)
+    size = 80,         -- width (for right/left) or height (for top/bottom)
 
     -- Options for "float" and "snacks" providers
     float_opts = {

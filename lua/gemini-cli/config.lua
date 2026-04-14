@@ -5,7 +5,7 @@ M.defaults = {
   terminal = {
     provider = "native", -- "native" (split), "float", or "snacks"
     position = "right", -- for "native" provider: "right", "left", "top", "bottom"
-    size = 40,         -- for "native" provider: Width or height
+    size = 80,         -- for "native" provider: Width or height
     -- for "float" and "snacks" providers:
     float_opts = {
       width = 0.8,
