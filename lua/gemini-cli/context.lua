@@ -67,6 +67,7 @@ function M.send_context_update()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local mode = vim.api.nvim_get_mode().mode
   local selected_text = nil
+  local content = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
 
   if mode:match("^[vV\22]") then
     -- Get visual selection
@@ -87,6 +88,7 @@ function M.send_context_update()
       path = file.path,
       timestamp = file.timestamp,
       isActive = file.path == path,
+      content = file.path == path and content or nil,
       cursor = file.path == path and {
         line = cursor[1],
         character = cursor[2] + 1,

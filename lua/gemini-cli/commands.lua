@@ -47,6 +47,10 @@ end
 function M.ask()
   local mode = vim.api.nvim_get_mode().mode
   local selection = ""
+  local bufnr = vim.api.nvim_get_current_buf()
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  local content = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
+
   if mode:match("^[vV\22]") then
     selection = M.get_visual_selection()
     -- Exit visual mode
@@ -58,7 +62,13 @@ function M.ask()
 
     local prompt = input
     if selection ~= "" then
-      prompt = string.format("Regarding this code:\n```\n%s\n```\n\n%s", selection, input)
+      prompt = string.format(
+        "File Path: %s\n\nFull File Content:\n```\n%s\n```\n\nHighlighted Code:\n```\n%s\n```\n\n%s",
+        path,
+        content,
+        selection,
+        input
+      )
     end
 
     terminal.send(prompt)
