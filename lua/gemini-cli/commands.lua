@@ -62,11 +62,14 @@ function M.ask()
 
     local prompt = input
     if selection ~= "" then
+      -- Indent each line of the selection by 2 spaces to avoid triggering shell commands (leading $)
+      -- and to provide a cleaner look for the LLM.
+      local indented_selection = "  " .. selection:gsub("\n", "\n  ")
       prompt = string.format(
         "File Path: %s (Starting at line %d)\n\nHighlighted Code:\n```\n%s\n```\n\n%s",
         path,
         start_line,
-        selection,
+        indented_selection,
         input
       )
     end

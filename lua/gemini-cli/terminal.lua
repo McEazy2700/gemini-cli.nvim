@@ -64,9 +64,10 @@ function M.send(text)
     local chan = vim.api.nvim_buf_get_var(M.buf, "terminal_job_id")
     if chan then
       -- Escape leading $ on any line to prevent gemini CLI from interpreting it as a shell command
-      local escaped_text = text:gsub("\n%$", "\n\\$")
+      -- Using a space is more robust as it breaks the ^$ pattern without adding visible escape chars that the CLI might strip
+      local escaped_text = text:gsub("\n%$", "\n $")
       if escaped_text:sub(1, 1) == "$" then
-        escaped_text = "\\" .. escaped_text
+        escaped_text = " " .. escaped_text
       end
       
       vim.api.nvim_chan_send(chan, escaped_text .. "\n")
