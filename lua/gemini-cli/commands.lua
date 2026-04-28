@@ -44,14 +44,22 @@ function M.get_visual_selection()
   return table.concat(lines, "\n"), start_line
 end
 
-function M.ask()
+function M.ask(opts)
+  opts = opts or {}
   local mode = vim.api.nvim_get_mode().mode
   local selection = ""
   local start_line = 0
   local bufnr = vim.api.nvim_get_current_buf()
   local path = vim.api.nvim_buf_get_name(bufnr)
 
-  if mode:match("^[vV\22]") then
+  -- Use range if provided (from user command), otherwise check visual mode
+  if opts.range and opts.range > 0 then
+    local start_pos = vim.fn.getpos("'<")
+    local end_pos = vim.fn.getpos("'>")
+    start_line = start_pos[2]
+    local lines = vim.api.nvim_buf_get_lines(bufnr, start_line - 1, end_pos[2], false)
+    selection = table.concat(lines, "\n")
+  elseif mode:match("^[vV\22]") then
     selection, start_line = M.get_visual_selection()
     -- Exit visual mode
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)

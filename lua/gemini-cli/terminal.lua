@@ -63,6 +63,11 @@ function M.send(text)
   if M.buf and vim.api.nvim_buf_is_valid(M.buf) then
     local chan = vim.api.nvim_buf_get_var(M.buf, "terminal_job_id")
     if chan then
+      -- Use Bracketed Paste mode to ensure the CLI treats this as a single literal block.
+      -- \27[200~ starts the paste, \27[201~ ends it.
+      local paste_start = "\27[200~"
+      local paste_end = "\27[201~"
+      
       -- Escape leading $ on any line to prevent gemini CLI from interpreting it as a shell command
       -- Using a space is more robust as it breaks the ^$ pattern without adding visible escape chars that the CLI might strip
       local escaped_text = text:gsub("\n%$", "\n $")
@@ -70,7 +75,7 @@ function M.send(text)
         escaped_text = " " .. escaped_text
       end
       
-      vim.api.nvim_chan_send(chan, escaped_text .. "\n")
+      vim.api.nvim_chan_send(chan, paste_start .. escaped_text .. paste_end .. "\n")
       -- Focus terminal if it's hidden or not active
       if not (M.win and vim.api.nvim_win_is_valid(M.win)) then
         M.open()

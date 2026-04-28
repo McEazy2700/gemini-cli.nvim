@@ -16,8 +16,8 @@ function M.setup(opts)
     M.open()
   end, {})
   
-  vim.api.nvim_create_user_command("GeminiAsk", function()
-    commands.ask()
+  vim.api.nvim_create_user_command("GeminiAsk", function(opts)
+    commands.ask(opts)
   end, { range = true })
   
   vim.api.nvim_create_user_command("GeminiSelectModel", function()
