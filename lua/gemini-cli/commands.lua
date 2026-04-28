@@ -23,7 +23,7 @@ function M.get_visual_selection()
   end
   
   local lines = vim.api.nvim_buf_get_lines(bufnr, start_line - 1, end_line, false)
-  if #lines == 0 then return "" end
+  if #lines == 0 then return "", 0 end
   
   if mode == "v" then
     -- Character-wise visual mode
@@ -41,18 +41,18 @@ function M.get_visual_selection()
   end
   -- mode == "V" (Line-wise) uses full lines already
   
-  return table.concat(lines, "\n")
+  return table.concat(lines, "\n"), start_line
 end
 
 function M.ask()
   local mode = vim.api.nvim_get_mode().mode
   local selection = ""
+  local start_line = 0
   local bufnr = vim.api.nvim_get_current_buf()
   local path = vim.api.nvim_buf_get_name(bufnr)
-  local content = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
 
   if mode:match("^[vV\22]") then
-    selection = M.get_visual_selection()
+    selection, start_line = M.get_visual_selection()
     -- Exit visual mode
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
   end
@@ -63,9 +63,9 @@ function M.ask()
     local prompt = input
     if selection ~= "" then
       prompt = string.format(
-        "File Path: %s\n\nFull File Content:\n```\n%s\n```\n\nHighlighted Code:\n```\n%s\n```\n\n%s",
+        "File Path: %s (Starting at line %d)\n\nHighlighted Code:\n```\n%s\n```\n\n%s",
         path,
-        content,
+        start_line,
         selection,
         input
       )
