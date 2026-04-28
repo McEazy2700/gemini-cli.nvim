@@ -29,8 +29,11 @@ Since this is a Neovim Lua plugin, no traditional build step is required.
 3.  Run `:Gemini` to start the terminal and connect the IDE context.
 
 ### Testing
-- **TODO:** Implement automated tests using a framework like `plenary.test`.
-- Manual verification: Check that the discovery file is created in the system cache directory and that the CLI reports "Connected to Neovim" upon startup.
+Automated tests are implemented using `plenary.test`.
+- Run tests: `make test`
+- Tests are located in the `tests/` directory.
+
+Manual verification: Check that the discovery file is created in the system cache directory and that the CLI reports "Connected to Neovim" upon startup.
 
 ## Development Conventions
 - **Pure Lua:** Avoid external binary dependencies; rely on Neovim's built-in APIs and `vim.uv`.

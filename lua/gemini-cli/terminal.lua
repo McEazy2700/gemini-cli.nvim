@@ -63,7 +63,13 @@ function M.send(text)
   if M.buf and vim.api.nvim_buf_is_valid(M.buf) then
     local chan = vim.api.nvim_buf_get_var(M.buf, "terminal_job_id")
     if chan then
-      vim.api.nvim_chan_send(chan, text .. "\n")
+      -- Escape leading $ on any line to prevent gemini CLI from interpreting it as a shell command
+      local escaped_text = text:gsub("\n%$", "\n\\$")
+      if escaped_text:sub(1, 1) == "$" then
+        escaped_text = "\\" .. escaped_text
+      end
+      
+      vim.api.nvim_chan_send(chan, escaped_text .. "\n")
       -- Focus terminal if it's hidden or not active
       if not (M.win and vim.api.nvim_win_is_valid(M.win)) then
         M.open()
